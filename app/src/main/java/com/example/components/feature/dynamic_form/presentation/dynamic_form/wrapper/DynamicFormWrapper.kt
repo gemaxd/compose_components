@@ -1,27 +1,35 @@
 @file:OptIn(ExperimentalAnimationApi::class)
 
-package com.example.components.feature.dynamic_form.wrapper
+package com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
 import com.example.components.dynamic_components.components.multiline.presentation.MultilineTextFieldComponent
 import com.example.components.dynamic_components.components.utils.EnumComponentType
-import com.example.components.feature.model.Component
+import com.example.components.feature.dynamic_form.domain.model.Component
+import com.example.components.feature.dynamic_form.presentation.dynamic_form.DynamicFormViewModel
 
 @Composable
 fun CreateComponents(
     components: List<Component>,
-    onComponentValidationChange: (Component, Boolean) -> Unit
-) {
-    val baseComponents = transformIntoBaseComponents(components = components)
-
-    components.forEach {
-        ChooseComponent(component = it) { isValid ->
-            onComponentValidationChange(it, isValid)
-            validateForm(baseComponents)
-        }
+    onChangeValidation : (Component, Boolean) -> Unit,
+    onValueChange: (Component, String) -> Unit
+): List<BaseDynamicComponent> {
+    components.forEach { component ->
+        ChooseComponent(
+            component = component,
+            onChange = { isValid ->
+                onChangeValidation(component, isValid)
+            },
+            onValueChange = { newValue ->
+                onValueChange(component, newValue)
+            }
+        )
     }
+
+    return transformIntoBaseComponents(components = components)
 }
 
 fun transformIntoBaseComponents(
@@ -31,7 +39,6 @@ fun transformIntoBaseComponents(
         ChooseBaseComponent(component = it)
     }
 }
-
 
 fun ChooseBaseComponent(component: Component): BaseDynamicComponent {
     return when (component.componentType) {
@@ -45,14 +52,22 @@ fun ChooseBaseComponent(component: Component): BaseDynamicComponent {
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
-fun ChooseComponent(component: Component, onChange: (Boolean) -> Unit) {
+fun ChooseComponent(
+    component: Component,
+    onChange: (Boolean) -> Unit,
+    onValueChange: (String) -> Unit
+) {
     when (component.componentType) {
         EnumComponentType.MULTILINE_TEXT_FIELD -> {
             MultilineTextFieldComponent(
                 component = component,
                 onChange = {
                     onChange(it)
+                },
+                onTextChange = {
+                    onValueChange(it)
                 }
             ).getContent()
         }
@@ -61,14 +76,4 @@ fun ChooseComponent(component: Component, onChange: (Boolean) -> Unit) {
             MultilineTextFieldComponent(component = component).getContent()
         }
     }
-}
-
-fun validateForm(components: List<BaseDynamicComponent>): Boolean {
-    var formIsValid = true
-    for (component in components) {
-        if (!component.isValid()) {
-            formIsValid = false
-        }
-    }
-    return formIsValid
 }

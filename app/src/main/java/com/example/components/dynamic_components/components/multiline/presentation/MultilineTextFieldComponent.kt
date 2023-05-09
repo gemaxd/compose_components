@@ -18,12 +18,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
 import com.example.components.dynamic_components.components.utils.DEFAULT_MULTILINE_HEIGHT
-import com.example.components.feature.model.Component
+import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
 class MultilineTextFieldComponent(
     private val component: Component,
-    private val onChange: (Boolean) -> Unit = {}
+    private val onChange: (Boolean) -> Unit = {},
+    private val onTextChange: (String) -> Unit = {}
 ) : BaseDynamicComponent {
     var text by mutableStateOf("")
 
@@ -41,6 +42,7 @@ class MultilineTextFieldComponent(
             onChange = {
                 text = it
                 onChange(isValid())
+                onTextChange(it)
             }
         )
     }

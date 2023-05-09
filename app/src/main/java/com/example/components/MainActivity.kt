@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.components.dynamic_components.components.multiline.presentation.CXCMultilineTextField
 import com.example.components.dynamic_components.components.multiline.presentation.MultilineTextFieldComponent
 import com.example.components.dynamic_components.components.singleline.CXCTextField
-import com.example.components.feature.dynamic_form.DynamicFormScreen
+import com.example.components.feature.dynamic_form.presentation.dynamic_form.DynamicFormScreen
 
 @ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {
