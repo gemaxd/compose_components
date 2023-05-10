@@ -14,26 +14,60 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import com.example.components.dynamic_components.components.base.BaseDynamicComponent
+import com.example.components.feature.dynamic_form.domain.model.Component
+
+@ExperimentalAnimationApi
+class TextFieldComponent(
+    private val component: Component,
+    private val onChange: (Boolean) -> Unit = {},
+    private val onTextChange: (String) -> Unit = {}
+) : BaseDynamicComponent {
+    var text by mutableStateOf("")
+
+    override fun getValue(): String = text
+
+    override fun isValid(): Boolean {
+        return text.length <= component.componentMaxLength && text.isNotEmpty()
+    }
+
+    @Composable
+    override fun getContent() {
+        return CXCTextField(
+            text = text,
+            component = component,
+            onChange = {
+                text = it
+                onChange(isValid())
+                onTextChange(it)
+            }
+        )
+    }
+}
 
 @ExperimentalAnimationApi
 @Composable
 fun CXCTextField(
-    label: String,
-    maxLength: Int
+    text: String,
+    component: Component,
+    onChange: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var currentText by remember { mutableStateOf(text) }
 
-    val errorMessage = if (text.length > maxLength) "Limite de caracteres excedido" else ""
+    val errorMessage = ""
 
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = text,
-            onValueChange = { text = it },
+            value = currentText,
+            onValueChange = {
+                currentText = it
+                onChange(it)
+            },
             singleLine = true,
-            label = { Text(text = label) }
+            label = { Text(text = component.componentLabel) }
         )
 
         Row(

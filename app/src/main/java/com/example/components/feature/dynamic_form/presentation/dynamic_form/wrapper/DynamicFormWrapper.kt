@@ -4,15 +4,14 @@ package com.example.components.feature.dynamic_form.presentation.dynamic_form.wr
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
 import com.example.components.dynamic_components.components.multiline.presentation.MultilineTextFieldComponent
+import com.example.components.dynamic_components.components.singleline.TextFieldComponent
 import com.example.components.dynamic_components.components.utils.EnumComponentType
 import com.example.components.feature.dynamic_form.domain.model.Component
-import com.example.components.feature.dynamic_form.presentation.dynamic_form.DynamicFormViewModel
 
 @Composable
-fun CreateComponents(
+fun createComponents(
     components: List<Component>,
     onChangeValidation : (Component, Boolean) -> Unit,
     onValueChange: (Component, String) -> Unit
@@ -36,11 +35,11 @@ fun transformIntoBaseComponents(
     components: List<Component>
 ): List<BaseDynamicComponent> {
     return components.map {
-        ChooseBaseComponent(component = it)
+        chooseBaseComponent(component = it)
     }
 }
 
-fun ChooseBaseComponent(component: Component): BaseDynamicComponent {
+fun chooseBaseComponent(component: Component): BaseDynamicComponent {
     return when (component.componentType) {
         EnumComponentType.MULTILINE_TEXT_FIELD -> {
             MultilineTextFieldComponent( component = component )
@@ -73,7 +72,15 @@ fun ChooseComponent(
         }
 
         EnumComponentType.TEXT_FIELD -> {
-            MultilineTextFieldComponent(component = component).getContent()
+            TextFieldComponent(
+                component = component,
+                onChange = {
+                    onChange(it)
+                },
+                onTextChange = {
+                    onValueChange(it)
+                }
+            ).getContent()
         }
     }
 }

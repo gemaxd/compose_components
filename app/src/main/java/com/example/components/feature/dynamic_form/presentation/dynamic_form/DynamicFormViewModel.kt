@@ -3,22 +3,30 @@ package com.example.components.feature.dynamic_form.presentation.dynamic_form
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.components.dynamic_components.components.utils.EnumComponentType
-import com.example.components.feature.dynamic_form.domain.model.Component
+import com.example.components.feature.dynamic_form.domain.repository.DynamicFormRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DynamicFormViewModel : ViewModel() {
+@HiltViewModel
+class DynamicFormViewModel @Inject constructor(
+    private val dynamicFormRepository: DynamicFormRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(DynamicFormState())
     val state: Flow<DynamicFormState> = _state
+
     init {
+        onEvent(DynamicFormEvent.StartLoading)
         viewModelScope.launch {
-            val createdComponents = createComponentsList()
+            val categories = dynamicFormRepository.getCategories()
+
             onEvent(
-                DynamicFormEvent.CreateComponentList(
-                    createdComponents
+                DynamicFormEvent.LoadCategoriesList(
+                    categories
                 )
             )
         }
@@ -27,18 +35,18 @@ class DynamicFormViewModel : ViewModel() {
     fun onEvent(event: DynamicFormEvent){
         when(event){
             is DynamicFormEvent.EnableFormSubmission -> {
-                _state.value = _state.value.copy(
+                emitState(_state.value.copy(
                     isValid = true
-                )
+                ))
             }
 
             is DynamicFormEvent.DisableFormSubmission -> {
-                _state.value = _state.value.copy(
+                emitState(_state.value.copy(
                     isValid = false
-                )
+                ))
             }
 
-            is DynamicFormEvent.CreateComponentList -> {
+            is DynamicFormEvent.LoadComponentList -> {
                 val validations = event.components.map {
                     it to mutableStateOf(false)
                 }
@@ -47,55 +55,97 @@ class DynamicFormViewModel : ViewModel() {
                     it to mutableStateOf("")
                 }
 
-                _state.value = _state.value.copy(
+                emitState(_state.value.copy(
                     components = event.components,
                     validations = validations,
-                    values = values
-                )
+                    values = values,
+                    isLoading = false
+                ))
             }
 
             is DynamicFormEvent.UpdateValidations -> {
                 val updatedValidations = _state.value.validations
                 updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
 
-                _state.value = _state.value.copy(
+                emitState(_state.value.copy(
                     validations = updatedValidations,
                     isValid = updatedValidations.all { it.second.value }
-                )
+                ))
             }
 
             is DynamicFormEvent.UpdateValues -> {
                 val updatedValues = _state.value.values.toMutableList()
                 updatedValues.find { it.first == event.component }?.second?.value = event.value
 
-                _state.value = _state.value.copy(
+                emitState(_state.value.copy(
                     values = updatedValues
+                ))
+            }
+
+            is DynamicFormEvent.ClearComponentList -> {
+                emitState(_state.value.copy(
+                    components = emptyList(),
+                    validations = emptyList(),
+                    values = emptyList()
+                ))
+            }
+
+            is DynamicFormEvent.LoadCategoriesList -> {
+                emitState(
+                    _state.value.copy(
+                        categories = event.categories,
+                        isLoading = false
+                    )
+                )
+            }
+
+            is DynamicFormEvent.StartLoading -> {
+                emitState(
+                    _state.value.copy(
+                        isLoading = true
+                    )
+                )
+            }
+
+            is DynamicFormEvent.StopLoading -> {
+                emitState(
+                    _state.value.copy(
+                        isLoading = false
+                    )
                 )
             }
         }
     }
 
-    private fun createComponentsList() = listOf(
-        Component(
-            componentType = EnumComponentType.MULTILINE_TEXT_FIELD,
-            componentLabel = "MultiLine",
-            componentMaxLength = 150
-        ),
-        Component(
-            componentType = EnumComponentType.MULTILINE_TEXT_FIELD,
-            componentLabel = "MultiLine 02",
-            componentMaxLength = 300
-        )
-    )
+    private fun emitState(state: DynamicFormState) {
+        viewModelScope.launch {
+            _state.emit(state)
+        }
+    }
 
     fun prepareContentMessage(): String {
         var returnMessage = ""
 
         _state.value.values.forEach {
-            returnMessage += " - ${it.second.value} - "
+            returnMessage += "\n - ${it.second.value} - "
         }
 
         return returnMessage
     }
 
+    fun loadComponentsList(categoryId: Int = 0){
+        onEvent(DynamicFormEvent.ClearComponentList)
+        onEvent(DynamicFormEvent.DisableFormSubmission)
+        onEvent(DynamicFormEvent.StartLoading)
+
+        viewModelScope.launch {
+            val components = dynamicFormRepository.getComponents(categoryId)
+            delay(500)
+            onEvent(
+                DynamicFormEvent.LoadComponentList(
+                    components
+                )
+            )
+        }
+    }
 }

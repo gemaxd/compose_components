@@ -5,8 +5,13 @@ import com.example.components.feature.dynamic_form.domain.model.Component
 sealed class DynamicFormEvent {
     object EnableFormSubmission: DynamicFormEvent()
     object DisableFormSubmission: DynamicFormEvent()
-    data class CreateComponentList(val components: List<Component>): DynamicFormEvent()
+    data class LoadComponentList(val components: List<Component>): DynamicFormEvent()
+    object ClearComponentList: DynamicFormEvent()
     data class UpdateValidations(val component: Component, val isValid: Boolean): DynamicFormEvent()
     data class UpdateValues(val component: Component, val value: String): DynamicFormEvent()
+    data class LoadCategoriesList(val categories: List<Pair<Int, String>>): DynamicFormEvent()
+    object StartLoading: DynamicFormEvent()
+    object StopLoading: DynamicFormEvent()
+
 
 }

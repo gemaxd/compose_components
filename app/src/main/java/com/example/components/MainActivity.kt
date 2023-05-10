@@ -21,8 +21,10 @@ import com.example.components.dynamic_components.components.multiline.presentati
 import com.example.components.dynamic_components.components.multiline.presentation.MultilineTextFieldComponent
 import com.example.components.dynamic_components.components.singleline.CXCTextField
 import com.example.components.feature.dynamic_form.presentation.dynamic_form.DynamicFormScreen
+import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalAnimationApi
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {

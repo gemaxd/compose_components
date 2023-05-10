@@ -1,5 +1,6 @@
 package com.example.components.dynamic_components.components.multiline.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,40 +23,42 @@ import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
 class MultilineTextFieldComponent(
+    private var startText: String = "",
     private val component: Component,
     private val onChange: (Boolean) -> Unit = {},
     private val onTextChange: (String) -> Unit = {}
 ) : BaseDynamicComponent {
-    var text by mutableStateOf("")
-
-    override fun getValue(): String = text
+    override fun getValue(): String = startText
 
     override fun isValid(): Boolean {
-        return text.length <= component.componentMaxLength && text.isNotEmpty()
+        return startText.length <= component.componentMaxLength && startText.isNotEmpty()
     }
 
     @Composable
     override fun getContent() {
          return CXCMultilineTextField(
-            text = text,
+            text = startText,
             component = component,
             onChange = {
-                text = it
+                startText = it
                 onChange(isValid())
                 onTextChange(it)
-            }
+            },
+            key = component.componentId
         )
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun CXCMultilineTextField(
     text: String,
     component: Component,
-    onChange: (String) -> Unit
+    onChange: (String) -> Unit,
+    key: Int
 ) {
-    var currentText by remember { mutableStateOf(text) }
-    val errorMessage = if (text.length > component.componentMaxLength) "Limite de caracteres excedido" else ""
+    var currentText by remember { mutableStateOf("") }
+    val errorMessage = if (currentText.length > component.componentMaxLength) "Limite de caracteres excedido" else ""
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -70,7 +73,7 @@ fun CXCMultilineTextField(
                 onChange(it)
             },
             maxLines = 4,
-            label = { Text(text = component.componentLabel) }
+            label = { Text(text = component.componentLabel+key) }
         )
 
         Row(
