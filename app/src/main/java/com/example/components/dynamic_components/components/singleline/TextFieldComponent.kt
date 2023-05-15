@@ -32,7 +32,7 @@ class TextFieldComponent(
     }
 
     @Composable
-    override fun getContent() {
+    override fun GetContent() {
         return CXCTextField(
             text = text,
             component = component,

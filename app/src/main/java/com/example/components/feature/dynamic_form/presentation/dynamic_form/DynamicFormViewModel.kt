@@ -3,6 +3,7 @@ package com.example.components.feature.dynamic_form.presentation.dynamic_form
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.components.feature.dynamic_form.domain.model.Component
 import com.example.components.feature.dynamic_form.domain.repository.DynamicFormRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -10,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class DynamicFormViewModel @Inject constructor(
@@ -47,20 +51,30 @@ class DynamicFormViewModel @Inject constructor(
             }
 
             is DynamicFormEvent.LoadComponentList -> {
-                val validations = event.components.map {
-                    it to mutableStateOf(false)
-                }
 
-                val values = event.components.map {
-                    it to mutableStateOf("")
-                }
+                onEvent(DynamicFormEvent.DisableFormSubmission)
 
-                emitState(_state.value.copy(
-                    components = event.components,
-                    validations = validations,
-                    values = values,
-                    isLoading = false
-                ))
+                viewModelScope.launch {
+                    val components: List<Component> =
+                        loadComponentsList(categoryId = event.categoryId)
+
+                    val validations = components.map {
+                        it to mutableStateOf(false)
+                    }
+
+                    val values = components.map {
+                        it to mutableStateOf("")
+                    }
+
+                    emitState(
+                        _state.value.copy(
+                            components = components,
+                            validations = validations,
+                            values = values,
+                            isLoading = false
+                        )
+                    )
+                }
             }
 
             is DynamicFormEvent.UpdateValidations -> {
@@ -74,7 +88,7 @@ class DynamicFormViewModel @Inject constructor(
             }
 
             is DynamicFormEvent.UpdateValues -> {
-                val updatedValues = _state.value.values.toMutableList()
+                val updatedValues = _state.value.values
                 updatedValues.find { it.first == event.component }?.second?.value = event.value
 
                 emitState(_state.value.copy(
@@ -127,25 +141,25 @@ class DynamicFormViewModel @Inject constructor(
         var returnMessage = ""
 
         _state.value.values.forEach {
-            returnMessage += "\n - ${it.second.value} - "
+            returnMessage += " - ${it.second.value} - \n"
         }
 
         return returnMessage
     }
 
-    fun loadComponentsList(categoryId: Int = 0){
+    private suspend fun loadComponentsList(categoryId: Int = 0): List<Component> = suspendCoroutine { continuation ->
         onEvent(DynamicFormEvent.ClearComponentList)
         onEvent(DynamicFormEvent.DisableFormSubmission)
         onEvent(DynamicFormEvent.StartLoading)
 
         viewModelScope.launch {
-            val components = dynamicFormRepository.getComponents(categoryId)
-            delay(500)
-            onEvent(
-                DynamicFormEvent.LoadComponentList(
-                    components
-                )
-            )
+            try {
+                val componentsList = dynamicFormRepository.getComponents(categoryId)
+                delay(1500)
+                continuation.resume(componentsList)
+            } catch (e: Exception) {
+                continuation.resumeWithException(e)
+            }
         }
     }
 }

@@ -68,7 +68,7 @@ fun ChooseComponent(
                 onTextChange = {
                     onValueChange(it)
                 }
-            ).getContent()
+            ).GetContent()
         }
 
         EnumComponentType.TEXT_FIELD -> {
@@ -80,7 +80,7 @@ fun ChooseComponent(
                 onTextChange = {
                     onValueChange(it)
                 }
-            ).getContent()
+            ).GetContent()
         }
     }
 }

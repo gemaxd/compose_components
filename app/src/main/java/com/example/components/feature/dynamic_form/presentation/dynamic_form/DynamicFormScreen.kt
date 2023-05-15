@@ -1,36 +1,114 @@
 package com.example.components.feature.dynamic_form.presentation.dynamic_form
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.sp
 import com.example.components.dynamic_components.components.dropdown.DropdownMenuComponent
 import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.createComponents
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+@ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Composable
 fun DynamicFormScreen(
-    viewModel: DynamicFormViewModel = hiltViewModel()
+    state: DynamicFormState,
+    onEvent: (DynamicFormEvent) -> Unit,
+    onConfirm: () -> Unit
+){
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(color = Color.Red)
+
+    Scaffold(
+        topBar = {
+            TopBar()
+        }){ innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            DynamicFormContent(
+                state = state,
+                onEvent = onEvent,
+                onConfirm = onConfirm
+            )
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun TopBar(){
+    TopAppBar(
+        title = {
+            Text(
+                text = "Dynamic Forms",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Localized description"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = "Localized description"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Red,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White,
+            navigationIconContentColor = Color.White
+        )
+    )
+}
+
+@Composable
+fun DynamicFormContent(
+    state: DynamicFormState,
+    onEvent: (DynamicFormEvent) -> Unit,
+    onConfirm: () -> Unit
 ){
     val focusManager = LocalFocusManager.current
-
-    val state by viewModel.state.collectAsState(DynamicFormState())
-    //var selectedItem by remember { mutableStateOf(state.categories[0]) }
+    var selectedItem by remember { mutableStateOf(state.categories.firstOrNull() ?: Pair(0, "Selecione uma categoria")) }
 
     Box(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Column(
@@ -42,22 +120,31 @@ fun DynamicFormScreen(
 
             DropdownMenuComponent(
                 items = state.categories,
-                selectedItem = state.categories.let {
-                    if(it.isNotEmpty()) it.first() else Pair(0, "Item 1")
-                },
+                selectedItem = selectedItem,
                 onItemSelected = {
-                    //selectedItem = it
-                    viewModel.loadComponentsList(categoryId = it.first)
+                    selectedItem = it
+                    onEvent(
+                        DynamicFormEvent.LoadComponentList(it.first)
+                    )
                     focusManager.clearFocus(true)
                 }
             )
             if(state.isLoading){
-                CircularProgressIndicator()
-            }else{
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(20.dp)
+                    )
+                }
+            } else {
                 createComponents(
                     components = state.components,
                     onChangeValidation = { component, isValid ->
-                        viewModel.onEvent(
+                        onEvent(
                             DynamicFormEvent.UpdateValidations(
                                 component = component,
                                 isValid = isValid
@@ -65,7 +152,7 @@ fun DynamicFormScreen(
                         )
                     },
                     onValueChange = { component, newValue ->
-                        viewModel.onEvent(
+                        onEvent(
                             DynamicFormEvent.UpdateValues(
                                 component = component,
                                 value = newValue
@@ -73,13 +160,14 @@ fun DynamicFormScreen(
                         )
                     }
                 )
-                Button(
-                    onClick = {
-                        print(viewModel.prepareContentMessage())
-                    },
-                    enabled = state.isValid
-                ) {
-                    Text(text = "Click ME!")
+
+                if(state.components.isNotEmpty()){
+                    Button(
+                        onClick = { onConfirm() },
+                        enabled = state.isValid
+                    ) {
+                        Text(text = "Click ME!")
+                    }
                 }
             }
         }

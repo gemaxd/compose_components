@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -15,10 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
 import com.example.components.dynamic_components.components.utils.DEFAULT_MULTILINE_HEIGHT
+import com.example.components.dynamic_components.components.utils.keyboard
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
@@ -35,7 +38,7 @@ class MultilineTextFieldComponent(
     }
 
     @Composable
-    override fun getContent() {
+    override fun GetContent() {
          return CXCMultilineTextField(
             text = startText,
             component = component,
@@ -57,7 +60,7 @@ fun CXCMultilineTextField(
     onChange: (String) -> Unit,
     key: Int
 ) {
-    var currentText by remember { mutableStateOf("") }
+    var currentText by remember { mutableStateOf(text) }
     val errorMessage = if (currentText.length > component.componentMaxLength) "Limite de caracteres excedido" else ""
 
     Column(
@@ -73,7 +76,10 @@ fun CXCMultilineTextField(
                 onChange(it)
             },
             maxLines = 4,
-            label = { Text(text = component.componentLabel+key) }
+            label = { Text(text = component.componentLabel+key) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password//component.componentInputType.keyboard()
+            )
         )
 
         Row(

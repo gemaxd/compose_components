@@ -2,27 +2,21 @@ package com.example.components
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.example.components.dynamic_components.components.multiline.presentation.CXCMultilineTextField
-import com.example.components.dynamic_components.components.multiline.presentation.MultilineTextFieldComponent
-import com.example.components.dynamic_components.components.singleline.CXCTextField
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.components.feature.dynamic_form.presentation.dynamic_form.DynamicFormScreen
+import com.example.components.feature.dynamic_form.presentation.dynamic_form.DynamicFormState
+import com.example.components.feature.dynamic_form.presentation.dynamic_form.DynamicFormViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,7 +27,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             Scaffold(
                 content = {
-                    DynamicFormScreen()
+
+                    val viewModel = hiltViewModel<DynamicFormViewModel>()
+                    val state = viewModel.state.collectAsState(initial = DynamicFormState())
+                    val ctx = LocalContext.current
+
+                    DynamicFormScreen(
+                        state = state.value,
+                        onEvent = viewModel::onEvent
+                    ){
+                        Toast.makeText(ctx, viewModel.prepareContentMessage(), Toast.LENGTH_SHORT).show()
+                    }
                 }
             )
         }
