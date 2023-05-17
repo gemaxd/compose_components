@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -33,8 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.components.dynamic_components.components.dropdown.DropdownMenuComponent
+import com.example.components.dynamic_components.components.dropdown.emptyCategory
+import com.example.components.dynamic_components.components.dropdown.emptySubCategory
 import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.createComponents
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
@@ -44,9 +46,6 @@ fun DynamicFormScreen(
     onEvent: (DynamicFormEvent) -> Unit,
     onConfirm: () -> Unit
 ){
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(color = Color.Red)
-
     Scaffold(
         topBar = {
             TopBar()
@@ -108,9 +107,12 @@ fun DynamicFormContent(
     onConfirm: () -> Unit
 ){
     val focusManager = LocalFocusManager.current
-    var selectedItem by remember { mutableStateOf(state.categories.firstOrNull() ?: Pair(0, "Selecione uma categoria")) }
+    var selectedCategory by remember { mutableStateOf(state.categories.firstOrNull() ?: emptyCategory()) }
+    var selectedSubCategory by remember { mutableStateOf(state.subcategories.firstOrNull() ?: emptySubCategory()) }
 
-    Box(modifier = Modifier.verticalScroll(rememberScrollState())) {
+    Box(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
         Column(
             modifier = Modifier.padding(
                 horizontal = 16.dp,
@@ -120,15 +122,37 @@ fun DynamicFormContent(
 
             DropdownMenuComponent(
                 items = state.categories,
-                selectedItem = selectedItem,
+                selectedItem = selectedCategory,
                 onItemSelected = {
-                    selectedItem = it
+                    selectedCategory = it
+                    selectedSubCategory = emptySubCategory()
+                    onEvent(
+                        DynamicFormEvent.LoadSubCategoriesList(it.first)
+                    )
+                    focusManager.clearFocus(true)
+                },
+                title = "Categoria",
+                description = "Use o campo abaixo para selecionar a categoria que irá carregar as sub-categorias."
+            )
+
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            DropdownMenuComponent(
+                items = state.subcategories,
+                selectedItem = selectedSubCategory,
+                onItemSelected = {
+                    selectedSubCategory = it
                     onEvent(
                         DynamicFormEvent.LoadComponentList(it.first)
                     )
                     focusManager.clearFocus(true)
-                }
+                },
+                title = "Sub-Categoria",
+                description = "Use o campo abaixo para selecionar a sub-categoria que irá carregar os components."
             )
+
+            Spacer(modifier = Modifier.padding(16.dp))
+
             if(state.isLoading){
                 Column(
                     modifier = Modifier.fillMaxSize(),

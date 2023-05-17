@@ -8,6 +8,7 @@ data class DynamicFormState(
     val validations: List<Pair<Component, MutableState<Boolean>>> = emptyList(),
     val components: List<Component> = emptyList(),
     val categories: List<Pair<Int, String>> = emptyList(),
+    val subcategories: List<Pair<Int, String>> = emptyList(),
     val isValid: Boolean = false,
     val isLoading: Boolean = false
 )

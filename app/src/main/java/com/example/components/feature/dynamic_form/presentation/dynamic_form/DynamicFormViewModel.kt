@@ -51,9 +51,6 @@ class DynamicFormViewModel @Inject constructor(
             }
 
             is DynamicFormEvent.LoadComponentList -> {
-
-                onEvent(DynamicFormEvent.DisableFormSubmission)
-
                 viewModelScope.launch {
                     val components: List<Component> =
                         loadComponentsList(categoryId = event.categoryId)
@@ -68,6 +65,7 @@ class DynamicFormViewModel @Inject constructor(
 
                     emitState(
                         _state.value.copy(
+                            isValid = false,
                             components = components,
                             validations = validations,
                             values = values,
@@ -111,6 +109,22 @@ class DynamicFormViewModel @Inject constructor(
                         isLoading = false
                     )
                 )
+            }
+
+            is DynamicFormEvent.LoadSubCategoriesList -> {
+                viewModelScope.launch {
+                    val subCategoriesList = dynamicFormRepository.getSubcategories(event.categoryId)
+
+                    emitState(
+                        _state.value.copy(
+                            components = emptyList(),
+                            validations = emptyList(),
+                            values = emptyList(),
+                            subcategories = subCategoriesList,
+                            isLoading = false
+                        )
+                    )
+                }
             }
 
             is DynamicFormEvent.StartLoading -> {

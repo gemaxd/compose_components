@@ -3,9 +3,13 @@
 package com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
-import com.example.components.dynamic_components.components.multiline.presentation.MultilineTextFieldComponent
+import com.example.components.dynamic_components.components.multiline.MultilineTextFieldComponent
 import com.example.components.dynamic_components.components.singleline.TextFieldComponent
 import com.example.components.dynamic_components.components.utils.EnumComponentType
 import com.example.components.feature.dynamic_form.domain.model.Component
@@ -58,29 +62,33 @@ fun ChooseComponent(
     onChange: (Boolean) -> Unit,
     onValueChange: (String) -> Unit
 ) {
-    when (component.componentType) {
-        EnumComponentType.MULTILINE_TEXT_FIELD -> {
-            MultilineTextFieldComponent(
-                component = component,
-                onChange = {
-                    onChange(it)
-                },
-                onTextChange = {
-                    onValueChange(it)
-                }
-            ).GetContent()
-        }
+    Box(
+        modifier = Modifier.padding(vertical = 8.dp)
+    ) {
+        when (component.componentType) {
+            EnumComponentType.MULTILINE_TEXT_FIELD -> {
+                MultilineTextFieldComponent(
+                    component = component,
+                    onChange = {
+                        onChange(it)
+                    },
+                    onTextChange = {
+                        onValueChange(it)
+                    }
+                ).GetContent()
+            }
 
-        EnumComponentType.TEXT_FIELD -> {
-            TextFieldComponent(
-                component = component,
-                onChange = {
-                    onChange(it)
-                },
-                onTextChange = {
-                    onValueChange(it)
-                }
-            ).GetContent()
+            EnumComponentType.TEXT_FIELD -> {
+                TextFieldComponent(
+                    component = component,
+                    onChange = {
+                        onChange(it)
+                    },
+                    onTextChange = {
+                        onValueChange(it)
+                    }
+                ).GetContent()
+            }
         }
     }
 }

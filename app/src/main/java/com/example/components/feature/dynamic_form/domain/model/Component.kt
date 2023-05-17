@@ -9,5 +9,6 @@ data class Component(
     val componentMaxLength: Int = 100,
     val componentLabel: String = "Label",
     val componentInputType: EnumComponentInputType = EnumComponentInputType.TEXT,
-    val componentDescription: String = "Um componente comum."
+    val componentTitle: String = "Componente",
+    val componentDescription: String? = null
 )

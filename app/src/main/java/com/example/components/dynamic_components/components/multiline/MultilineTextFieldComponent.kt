@@ -1,11 +1,13 @@
-package com.example.components.dynamic_components.components.multiline.presentation
+package com.example.components.dynamic_components.components.multiline
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -16,9 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
 import com.example.components.dynamic_components.components.utils.DEFAULT_MULTILINE_HEIGHT
 import com.example.components.dynamic_components.components.utils.keyboard
@@ -46,8 +49,7 @@ class MultilineTextFieldComponent(
                 startText = it
                 onChange(isValid())
                 onTextChange(it)
-            },
-            key = component.componentId
+            }
         )
     }
 }
@@ -57,8 +59,7 @@ class MultilineTextFieldComponent(
 fun CXCMultilineTextField(
     text: String,
     component: Component,
-    onChange: (String) -> Unit,
-    key: Int
+    onChange: (String) -> Unit
 ) {
     var currentText by remember { mutableStateOf(text) }
     val errorMessage = if (currentText.length > component.componentMaxLength) "Limite de caracteres excedido" else ""
@@ -66,6 +67,24 @@ fun CXCMultilineTextField(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
+        Text(
+            text = component.componentTitle,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        component.componentDescription?.let { description ->
+            if(description.isNotEmpty()){
+                Text(
+                    text = description,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.padding(4.dp))
+
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,9 +95,8 @@ fun CXCMultilineTextField(
                 onChange(it)
             },
             maxLines = 4,
-            label = { Text(text = component.componentLabel+key) },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password//component.componentInputType.keyboard()
+                keyboardType = component.componentInputType.keyboard()
             )
         )
 
