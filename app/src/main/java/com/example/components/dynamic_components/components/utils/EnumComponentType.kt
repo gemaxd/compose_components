@@ -5,6 +5,9 @@ import androidx.compose.ui.text.input.KeyboardType
 enum class EnumComponentType(val type: String) {
     MULTILINE_TEXT_FIELD (type = "multiline_text_field"),
     TEXT_FIELD (type = "text_field"),
+    ATTACHMENT_FIELD (type = "attachment_field"),
+    MULTI_SELECTION_LIST_FIELD (type = "multi_selection_list_field"),
+    SINGLE_SELECTION_LIST_FIELD (type = "single_selection_list_field"),
 }
 
 enum class EnumComponentInputType(val type: Int) {

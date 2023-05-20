@@ -8,50 +8,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.components.dynamic_components.components.base.BaseDynamicComponent
-import com.example.components.dynamic_components.components.multiline.MultilineTextFieldComponent
-import com.example.components.dynamic_components.components.singleline.TextFieldComponent
+import com.example.components.dynamic_components.components.DynamicComponentEvent
+import com.example.components.dynamic_components.components.attachment.AttachmentComponentBasis
+import com.example.components.dynamic_components.components.multilinetext.MultilineTextFieldBasis
+import com.example.components.dynamic_components.components.singlelinetext.TextFieldComponentBasis
 import com.example.components.dynamic_components.components.utils.EnumComponentType
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @Composable
-fun createComponents(
+fun CreateComponents(
     components: List<Component>,
-    onChangeValidation : (Component, Boolean) -> Unit,
-    onValueChange: (Component, String) -> Unit
-): List<BaseDynamicComponent> {
+    onComponentEvent: (DynamicComponentEvent) -> Unit
+) {
     components.forEach { component ->
         ChooseComponent(
             component = component,
-            onChange = { isValid ->
-                onChangeValidation(component, isValid)
-            },
-            onValueChange = { newValue ->
-                onValueChange(component, newValue)
-            }
+            onComponentEvent = onComponentEvent
         )
-    }
-
-    return transformIntoBaseComponents(components = components)
-}
-
-fun transformIntoBaseComponents(
-    components: List<Component>
-): List<BaseDynamicComponent> {
-    return components.map {
-        chooseBaseComponent(component = it)
-    }
-}
-
-fun chooseBaseComponent(component: Component): BaseDynamicComponent {
-    return when (component.componentType) {
-        EnumComponentType.MULTILINE_TEXT_FIELD -> {
-            MultilineTextFieldComponent( component = component )
-        }
-
-        EnumComponentType.TEXT_FIELD -> {
-            MultilineTextFieldComponent(component = component)
-        }
     }
 }
 
@@ -59,36 +32,35 @@ fun chooseBaseComponent(component: Component): BaseDynamicComponent {
 @Composable
 fun ChooseComponent(
     component: Component,
-    onChange: (Boolean) -> Unit,
-    onValueChange: (String) -> Unit
+    onComponentEvent: (DynamicComponentEvent) -> Unit
 ) {
     Box(
         modifier = Modifier.padding(vertical = 8.dp)
     ) {
         when (component.componentType) {
             EnumComponentType.MULTILINE_TEXT_FIELD -> {
-                MultilineTextFieldComponent(
+                MultilineTextFieldBasis(
                     component = component,
-                    onChange = {
-                        onChange(it)
-                    },
-                    onTextChange = {
-                        onValueChange(it)
-                    }
-                ).GetContent()
+                    onComponentEvent = onComponentEvent
+                ).Content()
             }
 
             EnumComponentType.TEXT_FIELD -> {
-                TextFieldComponent(
+                TextFieldComponentBasis(
                     component = component,
-                    onChange = {
-                        onChange(it)
-                    },
-                    onTextChange = {
-                        onValueChange(it)
-                    }
-                ).GetContent()
+                    onComponentEvent = onComponentEvent
+                ).Content()
             }
+
+            EnumComponentType.ATTACHMENT_FIELD -> {
+                AttachmentComponentBasis(
+                    component = component,
+                    onComponentEvent = onComponentEvent
+                ).Content()
+            }
+
+            EnumComponentType.MULTI_SELECTION_LIST_FIELD -> {}
+            EnumComponentType.SINGLE_SELECTION_LIST_FIELD -> {}
         }
     }
 }

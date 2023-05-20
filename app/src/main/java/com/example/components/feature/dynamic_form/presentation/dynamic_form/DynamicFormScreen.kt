@@ -33,10 +33,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.components.dynamic_components.components.DynamicComponentEvent
+import com.example.components.dynamic_components.components.dropdown.DropdownChildMenuComponent
 import com.example.components.dynamic_components.components.dropdown.DropdownMenuComponent
 import com.example.components.dynamic_components.components.dropdown.emptyCategory
 import com.example.components.dynamic_components.components.dropdown.emptySubCategory
-import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.createComponents
+import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.CreateComponents
 
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
@@ -44,6 +46,7 @@ import com.example.components.feature.dynamic_form.presentation.dynamic_form.wra
 fun DynamicFormScreen(
     state: DynamicFormState,
     onEvent: (DynamicFormEvent) -> Unit,
+    onComponentEvent: (DynamicComponentEvent) -> Unit,
     onConfirm: () -> Unit
 ){
     Scaffold(
@@ -58,6 +61,7 @@ fun DynamicFormScreen(
             DynamicFormContent(
                 state = state,
                 onEvent = onEvent,
+                onComponentEvent = onComponentEvent,
                 onConfirm = onConfirm
             )
         }
@@ -104,10 +108,10 @@ fun TopBar(){
 fun DynamicFormContent(
     state: DynamicFormState,
     onEvent: (DynamicFormEvent) -> Unit,
+    onComponentEvent: (DynamicComponentEvent) -> Unit,
     onConfirm: () -> Unit
 ){
     val focusManager = LocalFocusManager.current
-    var selectedCategory by remember { mutableStateOf(state.categories.firstOrNull() ?: emptyCategory()) }
     var selectedSubCategory by remember { mutableStateOf(state.subcategories.firstOrNull() ?: emptySubCategory()) }
 
     Box(
@@ -119,12 +123,10 @@ fun DynamicFormContent(
                 vertical = 16.dp
             )
         ) {
-
             DropdownMenuComponent(
                 items = state.categories,
-                selectedItem = selectedCategory,
+                selectedItem = emptyCategory(),
                 onItemSelected = {
-                    selectedCategory = it
                     selectedSubCategory = emptySubCategory()
                     onEvent(
                         DynamicFormEvent.LoadSubCategoriesList(it.first)
@@ -137,7 +139,7 @@ fun DynamicFormContent(
 
             Spacer(modifier = Modifier.padding(8.dp))
 
-            DropdownMenuComponent(
+            DropdownChildMenuComponent(
                 items = state.subcategories,
                 selectedItem = selectedSubCategory,
                 onItemSelected = {
@@ -160,29 +162,13 @@ fun DynamicFormContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(20.dp)
+                        modifier = Modifier.padding(20.dp)
                     )
                 }
             } else {
-                createComponents(
+                CreateComponents(
                     components = state.components,
-                    onChangeValidation = { component, isValid ->
-                        onEvent(
-                            DynamicFormEvent.UpdateValidations(
-                                component = component,
-                                isValid = isValid
-                            )
-                        )
-                    },
-                    onValueChange = { component, newValue ->
-                        onEvent(
-                            DynamicFormEvent.UpdateValues(
-                                component = component,
-                                value = newValue
-                            )
-                        )
-                    }
+                    onComponentEvent = onComponentEvent
                 )
 
                 if(state.components.isNotEmpty()){

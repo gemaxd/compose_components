@@ -3,6 +3,7 @@ package com.example.components.feature.dynamic_form.presentation.dynamic_form
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.feature.dynamic_form.domain.model.Component
 import com.example.components.feature.dynamic_form.domain.repository.DynamicFormRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,25 +76,6 @@ class DynamicFormViewModel @Inject constructor(
                 }
             }
 
-            is DynamicFormEvent.UpdateValidations -> {
-                val updatedValidations = _state.value.validations
-                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
-
-                emitState(_state.value.copy(
-                    validations = updatedValidations,
-                    isValid = updatedValidations.all { it.second.value }
-                ))
-            }
-
-            is DynamicFormEvent.UpdateValues -> {
-                val updatedValues = _state.value.values
-                updatedValues.find { it.first == event.component }?.second?.value = event.value
-
-                emitState(_state.value.copy(
-                    values = updatedValues
-                ))
-            }
-
             is DynamicFormEvent.ClearComponentList -> {
                 emitState(_state.value.copy(
                     components = emptyList(),
@@ -141,6 +123,30 @@ class DynamicFormViewModel @Inject constructor(
                         isLoading = false
                     )
                 )
+            }
+        }
+    }
+
+    fun onComponentEvent(event: DynamicComponentEvent){
+        when(event){
+            is DynamicComponentEvent.AddAttachment -> {
+
+            }
+            is DynamicComponentEvent.LoadAttachments -> {}
+            is DynamicComponentEvent.CounterUpdate -> {}
+            is DynamicComponentEvent.RemoveAttachment -> {}
+            is DynamicComponentEvent.OnTextChange -> {
+                val updatedValues = _state.value.values
+                updatedValues.find { it.first == event.component }?.second?.value = event.text
+
+                val updatedValidations = _state.value.validations
+                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
+
+                emitState(_state.value.copy(
+                    values = updatedValues,
+                    validations = updatedValidations,
+                    isValid = updatedValidations.all { it.second.value }
+                ))
             }
         }
     }

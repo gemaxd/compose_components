@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +27,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.components.dynamic_components.components.structurebasis.DefaultComponentHeader
 
 @Composable
 fun DropdownMenuComponent(
@@ -37,26 +37,108 @@ fun DropdownMenuComponent(
     selectedItem: Pair<Int, String>,
     onItemSelected: (Pair<Int, String>) -> Unit
 ) {
-    val arrowDropDownPainter = rememberVectorPainter(Icons.Default.ArrowDropDown)
     var expanded by remember { mutableStateOf(false) }
-    val textColor: Color = if(selectedItem.first == 0) Color.Gray else Color.Black
+    var localSelectedItem by remember { mutableStateOf(selectedItem) }
 
     Column {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = title,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
+        DropDownDefaultSelectorHeader(
+            title = title,
+            description = description,
+            selectedItem = localSelectedItem
+        ) {
+            expanded = it
+        }
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = description,
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    onClick = {
+                        localSelectedItem = item
+                        onItemSelected(item)
+                        expanded = false
+                    },
+                    text = {
+                        Text(
+                            text = item.second,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                )
 
-        Spacer(modifier = Modifier.padding(4.dp))
+                if (index < items.size - 1) {
+                    Divider()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DropdownChildMenuComponent(
+    title: String,
+    description: String,
+    items: List<Pair<Int, String>>,
+    selectedItem: Pair<Int, String>,
+    onItemSelected: (Pair<Int, String>) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        DropDownDefaultSelectorHeader(
+            title = title,
+            description = description,
+            selectedItem = selectedItem
+        ) {
+            expanded = it
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    onClick = {
+                        onItemSelected(item)
+                        expanded = false
+                    },
+                    text = {
+                        Text(
+                            text = item.second,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                )
+
+                if (index < items.size - 1) {
+                    Divider()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DropDownDefaultSelectorHeader(
+    title: String,
+    description: String?,
+    selectedItem: Pair<Int, String> = emptyOption(),
+    onExpand: (Boolean) -> Unit
+) {
+    val arrowDropDownPainter = rememberVectorPainter(Icons.Default.ArrowDropDown)
+    val textColor: Color = if (selectedItem.first == 0) Color.Gray else Color.Black
+
+    Column {
+        DefaultComponentHeader(
+            modifier = Modifier.fillMaxWidth(),
+            title = title,
+            description = description
+        )
 
         Box(
             modifier = Modifier
@@ -65,11 +147,15 @@ fun DropdownMenuComponent(
                     border = BorderStroke(1.dp, Color.Gray),
                     shape = RoundedCornerShape(5.dp)
                 )
-        ){
+        ) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = { expanded = true })
+                    .clickable(
+                        onClick = {
+                            onExpand(true)
+                        }
+                    )
                     .padding(16.dp)
             ) {
                 Text(
@@ -83,31 +169,6 @@ fun DropdownMenuComponent(
                     painter = arrowDropDownPainter,
                     contentDescription = null
                 )
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items.forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onItemSelected(item)
-                            expanded = false
-                        },
-                        text = {
-                            Text(
-                                text = item.second,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
-                    )
-
-                    if (index < items.size - 1) {
-                        Divider()
-                    }
-                }
             }
         }
     }

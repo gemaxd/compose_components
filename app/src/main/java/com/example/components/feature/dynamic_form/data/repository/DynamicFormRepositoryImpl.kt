@@ -49,20 +49,26 @@ class DynamicFormRepositoryImpl: DynamicFormRepository {
     private fun loadFirstList(): List<Component>{
         return listOf(
             Component(
+                componentId = 10,
+                componentType = EnumComponentType.TEXT_FIELD,
+                componentLabel = "First List Text",
+                componentInputType = EnumComponentInputType.NUMBER_PASSWORD,
+                componentTitle = "NUMBER PASSWORD Component",
+                componentDescription = "Breve descrição do campo com algumas observações de preenchimento."
+            ),
+            Component(
                 componentId = 11,
                 componentType = EnumComponentType.MULTILINE_TEXT_FIELD,
-                componentLabel = "First List Multiline",
-                componentMaxLength = 75,
-                componentInputType = EnumComponentInputType.PASSWORD,
-                componentTitle = "Multiline Component",
+                componentLabel = "First List Text",
+                componentInputType = EnumComponentInputType.NUMBER_PASSWORD,
+                componentTitle = "NUMBER PASSWORD Component",
                 componentDescription = "Breve descrição do campo com algumas observações de preenchimento."
             ),
             Component(
                 componentId = 12,
-                componentType = EnumComponentType.TEXT_FIELD,
-                componentLabel = "First List Text",
-                componentInputType = EnumComponentInputType.NUMBER_PASSWORD,
-                componentTitle = "Single-line Component",
+                componentType = EnumComponentType.ATTACHMENT_FIELD,
+                componentLabel = "First List Multiline",
+                componentTitle = "Attachment Component",
                 componentDescription = "Breve descrição do campo com algumas observações de preenchimento."
             )
         )
