@@ -2,6 +2,7 @@ package com.example.components.dynamic_components.components
 
 import com.example.components.feature.dynamic_form.domain.model.Attachment
 import com.example.components.feature.dynamic_form.domain.model.Component
+import com.example.components.feature.dynamic_form.domain.model.Option
 
 sealed class DynamicComponentEvent {
     data class LoadAttachments(val attachments: List<Attachment>): DynamicComponentEvent()
@@ -12,5 +13,23 @@ sealed class DynamicComponentEvent {
         val text: String,
         val isValid: Boolean
     ): DynamicComponentEvent()
+
+    data class OnDropDownOptionSelected(
+        val component: Component,
+        val option: Option,
+        val isValid: Boolean
+    ): DynamicComponentEvent()
     data class CounterUpdate(val count: Int): DynamicComponentEvent()
+
+    data class OnChipAdd(
+        val component: Component,
+        val option: Option,
+        val isValid: Boolean
+    ): DynamicComponentEvent()
+
+    data class OnChipRemove(
+        val component: Component,
+        val option: Option,
+        val isValid: Boolean
+    ): DynamicComponentEvent()
 }

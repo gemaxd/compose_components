@@ -129,15 +129,59 @@ class DynamicFormViewModel @Inject constructor(
 
     fun onComponentEvent(event: DynamicComponentEvent){
         when(event){
-            is DynamicComponentEvent.AddAttachment -> {
+            is DynamicComponentEvent.OnDropDownOptionSelected -> {
+                val updatedValues = _state.value.values
+                updatedValues.find { it.first == event.component }?.second?.value = event.option.optionDescription
 
+                val updatedValidations = _state.value.validations
+                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
+
+                emitState(_state.value.copy(
+                    values = updatedValues,
+                    validations = updatedValidations,
+                    isValid = updatedValidations.all { it.second.value }
+                ))
             }
+
+            is DynamicComponentEvent.AddAttachment -> {}
+
             is DynamicComponentEvent.LoadAttachments -> {}
+
             is DynamicComponentEvent.CounterUpdate -> {}
+
             is DynamicComponentEvent.RemoveAttachment -> {}
+
             is DynamicComponentEvent.OnTextChange -> {
                 val updatedValues = _state.value.values
                 updatedValues.find { it.first == event.component }?.second?.value = event.text
+
+                val updatedValidations = _state.value.validations
+                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
+
+                emitState(_state.value.copy(
+                    values = updatedValues,
+                    validations = updatedValidations,
+                    isValid = updatedValidations.all { it.second.value }
+                ))
+            }
+
+            is DynamicComponentEvent.OnChipAdd -> {
+                val updatedValues = _state.value.values
+                updatedValues.find { it.first == event.component }?.second?.value = event.option.optionDescription
+
+                val updatedValidations = _state.value.validations
+                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
+
+                emitState(_state.value.copy(
+                    values = updatedValues,
+                    validations = updatedValidations,
+                    isValid = updatedValidations.all { it.second.value }
+                ))
+            }
+
+            is DynamicComponentEvent.OnChipRemove -> {
+                val updatedValues = _state.value.values
+                updatedValues.find { it.first == event.component }?.second?.value = event.option.optionDescription
 
                 val updatedValidations = _state.value.validations
                 updatedValidations.find { it.first == event.component }?.second?.value = event.isValid

@@ -1,8 +1,9 @@
 package com.example.components.feature.dynamic_form.data.repository
 
-import com.example.components.dynamic_components.components.utils.EnumComponentInputType
-import com.example.components.dynamic_components.components.utils.EnumComponentType
+import com.example.components.dynamic_components.components.utils.enums.EnumComponentInputType
+import com.example.components.dynamic_components.components.utils.enums.EnumComponentType
 import com.example.components.feature.dynamic_form.domain.model.Component
+import com.example.components.feature.dynamic_form.domain.model.Option
 import com.example.components.feature.dynamic_form.domain.repository.DynamicFormRepository
 
 class DynamicFormRepositoryImpl: DynamicFormRepository {
@@ -14,34 +15,34 @@ class DynamicFormRepositoryImpl: DynamicFormRepository {
         }
     }
 
-    override fun getCategories(): List<Pair<Int, String>> {
+    override fun getCategories(): List<Option> {
         return listOf(
-            Pair(1, "Categoria #01"),
-            Pair(2, "Categoria #02"),
-            Pair(3, "Categoria #03")
+            Option(optionCode = 1, optionDescription = "Categoria #01"),
+            Option(optionCode = 2, optionDescription = "Categoria #02"),
+            Option(optionCode = 3, optionDescription = "Categoria #03")
         )
     }
 
-    override fun getSubcategories(categoryId: Int): List<Pair<Int, String>> {
+    override fun getSubcategories(categoryId: Int): List<Option> {
         return loadSubcategoryList(categoryId)
     }
 
-    private fun loadSubcategoryList(categoryId: Int): List<Pair<Int, String>> {
+    private fun loadSubcategoryList(categoryId: Int): List<Option> {
         return when(categoryId){
             2 -> listOf(
-                Pair(4, "Sub-Categoria #04"),
-                Pair(5, "Sub-Categoria #05"),
-                Pair(6, "Sub-Categoria #06")
+                Option(optionCode = 4, optionDescription = "Sub-Categoria #04"),
+                Option(optionCode = 5, optionDescription = "Sub-Categoria #05"),
+                Option(optionCode = 6, optionDescription = "Sub-Categoria #06")
             )
             3 -> listOf(
-                Pair(7, "Sub-Categoria #07"),
-                Pair(8, "Sub-Categoria #08"),
-                Pair(9, "Sub-Categoria #09")
+                Option(optionCode = 7, optionDescription = "Sub-Categoria #07"),
+                Option(optionCode = 8, optionDescription = "Sub-Categoria #08"),
+                Option(optionCode = 9, optionDescription = "Sub-Categoria #09")
             )
             else -> listOf(
-                Pair(1, "Sub-Categoria #01"),
-                Pair(2, "Sub-Categoria #02"),
-                Pair(3, "Sub-Categoria #03")
+                Option(optionCode = 1, optionDescription = "Sub-Categoria #01"),
+                Option(optionCode = 2, optionDescription = "Sub-Categoria #02"),
+                Option(optionCode = 3, optionDescription = "Sub-Categoria #03")
             )
         }
     }
@@ -70,7 +71,88 @@ class DynamicFormRepositoryImpl: DynamicFormRepository {
                 componentLabel = "First List Multiline",
                 componentTitle = "Attachment Component",
                 componentDescription = "Breve descrição do campo com algumas observações de preenchimento."
+            ),
+            Component(
+                componentId = 13,
+                componentType = EnumComponentType.DROPDOWN_FIELD,
+                componentLabel = "First List Drop down",
+                componentTitle = "DropDown Component",
+                componentDescription = "Breve descrição do campo com algumas observações de preenchimento.",
+                componentOptions = listOf(
+                    Option(
+                        optionCode = 1,
+                        optionDescription = "Primeira opção"
+                    ),
+                    Option(
+                        optionCode = 2,
+                        optionDescription = "Segunda opção"
+                    ),
+                    Option(
+                        optionCode = 3,
+                        optionDescription = "Terceira opção"
+                    ),
+                    Option(
+                        optionCode = 4,
+                        optionDescription = "Quarta opção"
+                    ),
+                    Option(
+                        optionCode = 5,
+                        optionDescription = "Quinta opção"
+                    )
+                )
+            ),
+            Component(
+                componentId = 14,
+                componentType = EnumComponentType.CHECKBOX_LIST_FIELD,
+                componentLabel = "First CheckBox List",
+                componentTitle = "CheckBox Component",
+                componentDescription = "Breve descrição do campo com algumas observações de preenchimento.",
+                componentOptions = listOf(
+                    Option(
+                        optionCode = 1,
+                        optionDescription = "Primeira checkbox"
+                    ),
+                    Option(
+                        optionCode = 2,
+                        optionDescription = "Segunda checkbox"
+                    ),
+                    Option(
+                        optionCode = 3,
+                        optionDescription = "Terceira checkbox"
+                    )
+                )
+            ),
+            Component(
+                componentId = 15,
+                componentType = EnumComponentType.RADIOBUTTON_LIST_FIELD,
+                componentLabel = "First RadioButton List",
+                componentTitle = "RadioGroup Component",
+                componentDescription = "Breve descrição do campo com algumas observações de preenchimento.",
+                componentOptions = listOf(
+                    Option(
+                        optionCode = 1,
+                        optionDescription = "Primeira radio"
+                    ),
+                    Option(
+                        optionCode = 2,
+                        optionDescription = "Segunda radio"
+                    ),
+                    Option(
+                        optionCode = 3,
+                        optionDescription = "Terceira radio"
+                    )
+                )
+            ),
+            Component(
+                componentId = 16,
+                componentType = EnumComponentType.CHIP_GROUP_FIELD,
+                componentLabel = "First Chip Group",
+                componentTitle = "ChipGroup Component",
+                componentDescription = "Breve descrição do campo com algumas observações de preenchimento.",
+                componentOptions = emptyList()
             )
+
+
         )
     }
 

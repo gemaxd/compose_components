@@ -1,7 +1,6 @@
 package com.example.components.dynamic_components.components.multilinetext
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,10 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
+import com.example.components.dynamic_components.components.base.DefaultComponentHeader
+import com.example.components.dynamic_components.components.base.DynamicComponentContainer
 import com.example.components.dynamic_components.components.structurebasis.DefaultCharacterCounter
-import com.example.components.dynamic_components.components.structurebasis.DefaultComponentHeader
 import com.example.components.dynamic_components.components.utils.DEFAULT_MULTILINE_HEIGHT
-import com.example.components.dynamic_components.components.utils.keyboard
+import com.example.components.dynamic_components.components.utils.enums.keyboard
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
@@ -59,34 +59,36 @@ fun MultilineTextFieldComponent(
     var currentText by remember { mutableStateOf(text) }
     val errorMessage = if (currentText.length > component.componentMaxLength) "Limite de caracteres excedido" else ""
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        DefaultComponentHeader(
-            modifier = Modifier.fillMaxWidth(),
-            title = component.componentTitle,
-            description = component.componentDescription
-        )
-
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(DEFAULT_MULTILINE_HEIGHT.dp),
-            value = currentText,
-            onValueChange = {
-                currentText = it
-                onChange(it)
-            },
-            maxLines = 4,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = component.componentInputType.keyboard()
+    DynamicComponentContainer(
+        header = {
+            DefaultComponentHeader(
+                modifier = Modifier.fillMaxWidth(),
+                title = component.componentTitle,
+                description = component.componentDescription
             )
-        )
-
-        DefaultCharacterCounter(
-            maxLength = component.componentMaxLength,
-            currentText = currentText,
-            errorMessage = errorMessage
-        )
-    }
+        },
+        content = {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(DEFAULT_MULTILINE_HEIGHT.dp),
+                value = currentText,
+                onValueChange = {
+                    currentText = it
+                    onChange(it)
+                },
+                maxLines = 4,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = component.componentInputType.keyboard()
+                )
+            )
+        },
+        footer = {
+            DefaultCharacterCounter(
+                maxLength = component.componentMaxLength,
+                currentText = currentText,
+                errorMessage = errorMessage
+            )
+        }
+    )
 }

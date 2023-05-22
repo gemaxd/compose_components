@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,12 +35,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.components.dynamic_components.components.DynamicComponentEvent
-import com.example.components.dynamic_components.components.dropdown.DropdownChildMenuComponent
-import com.example.components.dynamic_components.components.dropdown.DropdownMenuComponent
+import com.example.components.dynamic_components.components.dropdown.DropdownChildContent
+import com.example.components.dynamic_components.components.dropdown.DropdownContent
 import com.example.components.dynamic_components.components.dropdown.emptyCategory
 import com.example.components.dynamic_components.components.dropdown.emptySubCategory
 import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.CreateComponents
 
+@ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Composable
@@ -104,6 +106,7 @@ fun TopBar(){
     )
 }
 
+@ExperimentalLayoutApi
 @Composable
 fun DynamicFormContent(
     state: DynamicFormState,
@@ -123,13 +126,13 @@ fun DynamicFormContent(
                 vertical = 16.dp
             )
         ) {
-            DropdownMenuComponent(
+            DropdownContent(
                 items = state.categories,
                 selectedItem = emptyCategory(),
                 onItemSelected = {
                     selectedSubCategory = emptySubCategory()
                     onEvent(
-                        DynamicFormEvent.LoadSubCategoriesList(it.first)
+                        DynamicFormEvent.LoadSubCategoriesList(it.optionCode)
                     )
                     focusManager.clearFocus(true)
                 },
@@ -139,13 +142,13 @@ fun DynamicFormContent(
 
             Spacer(modifier = Modifier.padding(8.dp))
 
-            DropdownChildMenuComponent(
+            DropdownChildContent(
                 items = state.subcategories,
                 selectedItem = selectedSubCategory,
                 onItemSelected = {
                     selectedSubCategory = it
                     onEvent(
-                        DynamicFormEvent.LoadComponentList(it.first)
+                        DynamicFormEvent.LoadComponentList(it.optionCode)
                     )
                     focusManager.clearFocus(true)
                 },

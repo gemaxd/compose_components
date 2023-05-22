@@ -1,4 +1,4 @@
-package com.example.components.dynamic_components.components.structurebasis
+package com.example.components.dynamic_components.components.base
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

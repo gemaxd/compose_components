@@ -8,9 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,13 +23,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -191,30 +185,6 @@ fun ImageFromUri(attachment: Attachment) {
         modifier = Modifier
             .size(200.dp)
     )
-}
-
-@Composable
-fun CloseIcon(
-    modifier: Modifier = Modifier,
-    onClose: () -> Unit = {}
-){
-    Box(
-        modifier = modifier.background(
-            color = Color.Black.copy(alpha = 0.5f),
-            shape = CircleShape,
-        )
-    ) {
-        Icon(
-            imageVector = Icons.Default.Close,
-            contentDescription = "Close",
-            tint = Color.White,
-            modifier = Modifier
-                .size(24.dp)
-                .align(Alignment.TopEnd)
-                .padding(4.dp)
-                .clickable { onClose() }
-        )
-    }
 }
 
 fun createGalleryIntent(): Intent {
