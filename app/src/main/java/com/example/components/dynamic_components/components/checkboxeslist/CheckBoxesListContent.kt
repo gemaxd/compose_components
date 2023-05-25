@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.components.dynamic_components.components.checkbox.CheckBoxOption
 import com.example.components.dynamic_components.components.base.DefaultComponentHeader
+import com.example.components.dynamic_components.components.checkbox.CheckBoxOption
 import com.example.components.dynamic_components.components.utils.DEFAULT_OPTION_HEIGHT
 import com.example.components.feature.dynamic_form.domain.model.Option
 

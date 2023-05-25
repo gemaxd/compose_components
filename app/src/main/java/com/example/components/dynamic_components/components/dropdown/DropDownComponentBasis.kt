@@ -9,16 +9,12 @@ import androidx.compose.runtime.setValue
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicListComponent
 import com.example.components.feature.dynamic_form.domain.model.Component
-import com.example.components.feature.dynamic_form.domain.model.Option
 
 @ExperimentalAnimationApi
 class DropDownComponentBasis(
     private val component: Component,
-    private val onComponentEvent: (DynamicComponentEvent) -> Unit,
+    private val onComponentEvent: (DynamicComponentEvent) -> Unit = {},
 ) : BaseDynamicListComponent {
-    override fun getValue(): List<Option> {
-        return component.componentOptions.filter { it.optionChecked }
-    }
 
     override fun isValid(): Boolean {
         return component.componentOptions.any {
@@ -44,6 +40,15 @@ class DropDownComponentBasis(
                     )
                 )
             }
+        )
+    }
+
+    @Composable
+    override fun Review() {
+        DropDownReview(
+            title = component.componentTitle,
+            description = component.componentDescription,
+            value = component.componentOptions.getSingleCheckedOptionDescription()
         )
     }
 }

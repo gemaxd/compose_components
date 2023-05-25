@@ -37,18 +37,18 @@ class DynamicFormViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: DynamicFormEvent){
-        when(event){
+    fun onEvent(event: DynamicFormEvent) {
+        when (event) {
             is DynamicFormEvent.EnableFormSubmission -> {
-                emitState(_state.value.copy(
+                dynamicFormStateUpdate {
                     isValid = true
-                ))
+                }
             }
 
             is DynamicFormEvent.DisableFormSubmission -> {
-                emitState(_state.value.copy(
+                dynamicFormStateUpdate {
                     isValid = false
-                ))
+                }
             }
 
             is DynamicFormEvent.LoadComponentList -> {
@@ -59,171 +59,148 @@ class DynamicFormViewModel @Inject constructor(
                     val validations = components.map {
                         it to mutableStateOf(false)
                     }
-
-                    val values = components.map {
-                        it to mutableStateOf("")
+                    dynamicFormStateUpdate {
+                        this.isValid = false
+                        this.components = components
+                        this.validations = validations
+                        this.isLoading = false
                     }
-
-                    emitState(
-                        _state.value.copy(
-                            isValid = false,
-                            components = components,
-                            validations = validations,
-                            values = values,
-                            isLoading = false
-                        )
-                    )
                 }
             }
 
             is DynamicFormEvent.ClearComponentList -> {
-                emitState(_state.value.copy(
-                    components = emptyList(),
-                    validations = emptyList(),
-                    values = emptyList()
-                ))
+                dynamicFormStateUpdate {
+                    this.components = emptyList()
+                    this.validations = emptyList()
+                }
             }
 
             is DynamicFormEvent.LoadCategoriesList -> {
-                emitState(
-                    _state.value.copy(
-                        categories = event.categories,
-                        isLoading = false
-                    )
-                )
+                dynamicFormStateUpdate {
+                    this.categories = event.categories
+                    this.isLoading = false
+                }
             }
 
             is DynamicFormEvent.LoadSubCategoriesList -> {
                 viewModelScope.launch {
                     val subCategoriesList = dynamicFormRepository.getSubcategories(event.categoryId)
 
-                    emitState(
-                        _state.value.copy(
-                            components = emptyList(),
-                            validations = emptyList(),
-                            values = emptyList(),
-                            subcategories = subCategoriesList,
-                            isLoading = false
-                        )
-                    )
+                    dynamicFormStateUpdate {
+                        this.components = emptyList()
+                        this.validations = emptyList()
+                        this.subcategories = subCategoriesList
+                        this.isLoading = false
+                    }
                 }
             }
 
             is DynamicFormEvent.StartLoading -> {
-                emitState(
-                    _state.value.copy(
-                        isLoading = true
-                    )
-                )
+                dynamicFormStateUpdate {
+                    this.isLoading = true
+                }
             }
 
             is DynamicFormEvent.StopLoading -> {
-                emitState(
-                    _state.value.copy(
-                        isLoading = false
-                    )
-                )
+                dynamicFormStateUpdate {
+                    this.isLoading = false
+                }
             }
         }
     }
 
-    fun onComponentEvent(event: DynamicComponentEvent){
-        when(event){
+    fun onComponentEvent(event: DynamicComponentEvent) {
+        when (event) {
             is DynamicComponentEvent.OnDropDownOptionSelected -> {
-                val updatedValues = _state.value.values
-                updatedValues.find { it.first == event.component }?.second?.value = event.option.optionDescription
-
-                val updatedValidations = _state.value.validations
-                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
-
-                emitState(_state.value.copy(
-                    values = updatedValues,
-                    validations = updatedValidations,
-                    isValid = updatedValidations.all { it.second.value }
-                ))
+                updateOptionValidations(
+                    component = event.component,
+                    isValid = event.isValid
+                )
             }
 
-            is DynamicComponentEvent.AddAttachment -> {}
+            is DynamicComponentEvent.AddAttachment -> {
+                val component = event.component
+                component.componentAttachments =
+                    component.componentAttachments.plus(event.attachment)
+            }
 
             is DynamicComponentEvent.LoadAttachments -> {}
 
             is DynamicComponentEvent.CounterUpdate -> {}
 
-            is DynamicComponentEvent.RemoveAttachment -> {}
+            is DynamicComponentEvent.RemoveAttachment -> {
+                val component = event.component
+                component.componentAttachments =
+                    component.componentAttachments.minus(event.attachment)
+            }
 
             is DynamicComponentEvent.OnTextChange -> {
-                val updatedValues = _state.value.values
-                updatedValues.find { it.first == event.component }?.second?.value = event.text
-
                 val updatedValidations = _state.value.validations
-                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
+                updatedValidations.find { it.first == event.component }?.second?.value =
+                    event.isValid
 
-                emitState(_state.value.copy(
-                    values = updatedValues,
-                    validations = updatedValidations,
-                    isValid = updatedValidations.all { it.second.value }
-                ))
+                val updatedComponents = _state.value.components
+                updatedComponents.find { it == event.component }?.componentValue = event.text
+
+                dynamicFormStateUpdate {
+                    this.validations = updatedValidations
+                    this.components = updatedComponents
+                    this.isValid = updatedValidations.all { it.second.value }
+                }
             }
 
             is DynamicComponentEvent.OnChipAdd -> {
-                val updatedValues = _state.value.values
-                updatedValues.find { it.first == event.component }?.second?.value = event.option.optionDescription
-
-                val updatedValidations = _state.value.validations
-                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
-
-                emitState(_state.value.copy(
-                    values = updatedValues,
-                    validations = updatedValidations,
-                    isValid = updatedValidations.all { it.second.value }
-                ))
+                val component = event.component
+                component.componentOptions = component.componentOptions.plus(event.option)
             }
 
             is DynamicComponentEvent.OnChipRemove -> {
-                val updatedValues = _state.value.values
-                updatedValues.find { it.first == event.component }?.second?.value = event.option.optionDescription
+                val component = event.component
+                component.componentOptions = component.componentOptions.minus(event.option)
+            }
 
-                val updatedValidations = _state.value.validations
-                updatedValidations.find { it.first == event.component }?.second?.value = event.isValid
-
-                emitState(_state.value.copy(
-                    values = updatedValues,
-                    validations = updatedValidations,
-                    isValid = updatedValidations.all { it.second.value }
-                ))
+            is DynamicComponentEvent.UpdateOptionsValidations -> {
+                updateOptionValidations(
+                    component = event.component,
+                    isValid = event.isValid
+                )
             }
         }
     }
 
-    private fun emitState(state: DynamicFormState) {
-        viewModelScope.launch {
-            _state.emit(state)
+    private fun dynamicFormStateUpdate(properties: DynamicFormState.() -> Unit) {
+        _state.value = _state.value.copy().apply(properties)
+        dynamicFormRepository.updateComponents(_state.value.components)
+    }
+
+    private fun updateOptionValidations(
+        component: Component,
+        isValid: Boolean
+    ) {
+        val updatedValidations = _state.value.validations
+        updatedValidations.find { it.first == component }?.second?.value = isValid
+
+        dynamicFormStateUpdate {
+            this.validations = updatedValidations
+            this.isValid = updatedValidations.all { it.second.value }
         }
     }
 
-    fun prepareContentMessage(): String {
-        var returnMessage = ""
+    private suspend fun loadComponentsList(categoryId: Int = 0): List<Component> =
+        suspendCoroutine { continuation ->
+            onEvent(DynamicFormEvent.ClearComponentList)
+            onEvent(DynamicFormEvent.DisableFormSubmission)
+            onEvent(DynamicFormEvent.StartLoading)
 
-        _state.value.values.forEach {
-            returnMessage += " - ${it.second.value} - \n"
-        }
-
-        return returnMessage
-    }
-
-    private suspend fun loadComponentsList(categoryId: Int = 0): List<Component> = suspendCoroutine { continuation ->
-        onEvent(DynamicFormEvent.ClearComponentList)
-        onEvent(DynamicFormEvent.DisableFormSubmission)
-        onEvent(DynamicFormEvent.StartLoading)
-
-        viewModelScope.launch {
-            try {
-                val componentsList = dynamicFormRepository.getComponents(categoryId)
-                delay(1500)
-                continuation.resume(componentsList)
-            } catch (e: Exception) {
-                continuation.resumeWithException(e)
+            viewModelScope.launch {
+                try {
+                    val componentsList =
+                        dynamicFormRepository.getComponentsBySubcategory(categoryId)
+                    delay(1500)
+                    continuation.resume(componentsList)
+                } catch (e: Exception) {
+                    continuation.resumeWithException(e)
+                }
             }
         }
-    }
 }

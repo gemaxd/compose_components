@@ -17,16 +17,16 @@ import com.example.components.dynamic_components.components.utils.enums.IconSize
 @Composable
 @Preview(showBackground = true)
 fun ChipContent(
-    chipIndex: Int = 0,
-    description: String = "Option",
-    onRemoveChip: (Int) -> Unit = {}
+    modifier: Modifier = Modifier,
+    description: String = "teste teste Option",
+    onRemoveChip: () -> Unit = {}
 ){
     Chip(
         onClick = {}
     ) {
         Row {
             Text(
-                modifier = Modifier.align(alignment = CenterVertically)
+                modifier = modifier.align(alignment = CenterVertically)
                     .padding(end = 8.dp),
                 text = description
             )
@@ -34,7 +34,7 @@ fun ChipContent(
                 modifier = Modifier.align(CenterVertically),
                 iconSize = IconSizeEnums.SMALL_SIZE,
                 onClose = {
-                    onRemoveChip(chipIndex)
+                    onRemoveChip()
                 }
             )
         }

@@ -7,9 +7,11 @@ data class Component(
     val componentId: Int = 0,
     val componentTitle: String = "Componente",
     val componentDescription: String? = null,
+    var componentValue: String? = null,
     val componentLabel: String = "Label",
     val componentType: EnumComponentType = EnumComponentType.TEXT_FIELD,
     val componentMaxLength: Int = 100,
     val componentInputType: EnumComponentInputType = EnumComponentInputType.TEXT,
-    var componentOptions: List<Option> = emptyList()
+    var componentOptions: List<Option> = emptyList(),
+    var componentAttachments: List<Attachment> = emptyList(),
 )

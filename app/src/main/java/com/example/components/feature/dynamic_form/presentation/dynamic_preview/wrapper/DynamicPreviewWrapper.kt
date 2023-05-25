@@ -1,6 +1,4 @@
-@file:OptIn(ExperimentalAnimationApi::class)
-
-package com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper
+package com.example.components.feature.dynamic_form.presentation.dynamic_preview.wrapper
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
@@ -10,7 +8,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.attachment.AttachmentComponentBasis
 import com.example.components.dynamic_components.components.checkboxeslist.CheckBoxesListComponentBasis
 import com.example.components.dynamic_components.components.chipgroup.ChipGroupComponentBasis
@@ -21,17 +18,16 @@ import com.example.components.dynamic_components.components.singlelinetext.TextF
 import com.example.components.dynamic_components.components.utils.enums.EnumComponentType
 import com.example.components.feature.dynamic_form.domain.model.Component
 
+@ExperimentalAnimationApi
 @OptIn(ExperimentalMaterialApi::class)
 @ExperimentalLayoutApi
 @Composable
-fun CreateFormComponents(
-    components: List<Component>,
-    onComponentEvent: (DynamicComponentEvent) -> Unit
+fun CreateReviewComponents(
+    components: List<Component>
 ) {
     components.forEach { component ->
         ChooseComponent(
-            component = component,
-            onComponentEvent = onComponentEvent
+            component = component
         )
     }
 }
@@ -41,8 +37,7 @@ fun CreateFormComponents(
 @ExperimentalAnimationApi
 @Composable
 fun ChooseComponent(
-    component: Component,
-    onComponentEvent: (DynamicComponentEvent) -> Unit
+    component: Component
 ) {
     Box(
         modifier = Modifier.padding(vertical = 8.dp)
@@ -50,48 +45,41 @@ fun ChooseComponent(
         when (component.componentType) {
             EnumComponentType.MULTILINE_TEXT_FIELD -> {
                 MultilineTextFieldBasis(
-                    component = component,
-                    onComponentEvent = onComponentEvent
-                ).Content()
+                    component = component
+                ).Review()
             }
 
             EnumComponentType.TEXT_FIELD -> {
                 TextFieldComponentBasis(
-                    component = component,
-                    onComponentEvent = onComponentEvent
-                ).Content()
+                    component = component
+                ).Review()
             }
 
             EnumComponentType.ATTACHMENT_FIELD -> {
                 AttachmentComponentBasis(
-                    component = component,
-                    onComponentEvent = onComponentEvent
-                ).Content()
+                    component = component
+                ).Review()
             }
 
             EnumComponentType.CHECKBOX_LIST_FIELD -> {
                 CheckBoxesListComponentBasis(
-                    component = component,
-                    onComponentEvent = onComponentEvent
-                ).Content()
+                    component = component
+                ).Review()
             }
             EnumComponentType.RADIOBUTTON_LIST_FIELD -> {
                 RadioButtonListComponentBasis(
-                    component = component,
-                    onComponentEvent = onComponentEvent
-                ).Content()
+                    component = component
+                ).Review()
             }
             EnumComponentType.DROPDOWN_FIELD -> {
                 DropDownComponentBasis(
-                    component = component,
-                    onComponentEvent = onComponentEvent
-                ).Content()
+                    component = component
+                ).Review()
             }
             EnumComponentType.CHIP_GROUP_FIELD -> {
                 ChipGroupComponentBasis(
-                    component = component,
-                    onComponentEvent = onComponentEvent
-                ).Content()
+                    component = component
+                ).Review()
             }
         }
     }

@@ -34,26 +34,28 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.dropdown.DropdownChildContent
 import com.example.components.dynamic_components.components.dropdown.DropdownContent
 import com.example.components.dynamic_components.components.dropdown.emptyCategory
 import com.example.components.dynamic_components.components.dropdown.emptySubCategory
-import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.CreateComponents
+import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.CreateFormComponents
+import com.example.components.navigation.Screen
 
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Composable
 fun DynamicFormScreen(
+    navHostController: NavHostController? = null,
     state: DynamicFormState,
     onEvent: (DynamicFormEvent) -> Unit,
-    onComponentEvent: (DynamicComponentEvent) -> Unit,
-    onConfirm: () -> Unit
+    onComponentEvent: (DynamicComponentEvent) -> Unit
 ){
     Scaffold(
         topBar = {
-            TopBar()
+            DynamicFormTopBar()
         }){ innerPadding ->
         Box(
             modifier = Modifier
@@ -61,10 +63,10 @@ fun DynamicFormScreen(
                 .fillMaxSize()
         ) {
             DynamicFormContent(
+                navController = navHostController,
                 state = state,
                 onEvent = onEvent,
-                onComponentEvent = onComponentEvent,
-                onConfirm = onConfirm
+                onComponentEvent = onComponentEvent
             )
         }
     }
@@ -72,7 +74,7 @@ fun DynamicFormScreen(
 
 @ExperimentalMaterial3Api
 @Composable
-fun TopBar(){
+fun DynamicFormTopBar(){
     TopAppBar(
         title = {
             Text(
@@ -109,10 +111,10 @@ fun TopBar(){
 @ExperimentalLayoutApi
 @Composable
 fun DynamicFormContent(
+    navController: NavHostController? = null,
     state: DynamicFormState,
     onEvent: (DynamicFormEvent) -> Unit,
-    onComponentEvent: (DynamicComponentEvent) -> Unit,
-    onConfirm: () -> Unit
+    onComponentEvent: (DynamicComponentEvent) -> Unit
 ){
     val focusManager = LocalFocusManager.current
     var selectedSubCategory by remember { mutableStateOf(state.subcategories.firstOrNull() ?: emptySubCategory()) }
@@ -169,14 +171,20 @@ fun DynamicFormContent(
                     )
                 }
             } else {
-                CreateComponents(
+                CreateFormComponents(
                     components = state.components,
                     onComponentEvent = onComponentEvent
                 )
 
                 if(state.components.isNotEmpty()){
                     Button(
-                        onClick = { onConfirm() },
+                        onClick = {
+                            navController?.navigate(
+                                Screen.DynamicFormReviewScreen.route
+                            ){
+                                popUpTo(Screen.DynamicFormScreen.route)
+                            }
+                        },
                         enabled = state.isValid
                     ) {
                         Text(text = "Click ME!")

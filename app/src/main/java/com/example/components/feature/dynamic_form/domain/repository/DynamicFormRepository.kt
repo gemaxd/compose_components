@@ -4,7 +4,9 @@ import com.example.components.feature.dynamic_form.domain.model.Component
 import com.example.components.feature.dynamic_form.domain.model.Option
 
 interface DynamicFormRepository {
-    fun getComponents(subcategoryId: Int): List<Component>
+    fun updateComponents(components: List<Component>)
+    suspend fun getComponents(): List<Component>
+    fun getComponentsBySubcategory(subcategoryId: Int): List<Component>
     fun getCategories(): List<Option>
     fun getSubcategories(categoryId: Int): List<Option>
 }

@@ -7,12 +7,24 @@ import com.example.components.feature.dynamic_form.domain.model.Option
 import com.example.components.feature.dynamic_form.domain.repository.DynamicFormRepository
 
 class DynamicFormRepositoryImpl: DynamicFormRepository {
-    override fun getComponents(subcategoryId: Int): List<Component> {
-        return when(subcategoryId){
+
+    var repoComponents = emptyList<Component>()
+    override fun updateComponents(components: List<Component>) {
+        repoComponents = components
+    }
+
+    override suspend fun getComponents(): List<Component> {
+        return repoComponents
+    }
+
+    override fun getComponentsBySubcategory(subcategoryId: Int): List<Component> {
+        repoComponents =  when(subcategoryId){
             2 -> loadSecondList()
             3 -> loadThirdList()
             else -> loadFirstList()
         }
+
+        return repoComponents
     }
 
     override fun getCategories(): List<Option> {

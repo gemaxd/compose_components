@@ -13,11 +13,9 @@ import com.example.components.feature.dynamic_form.domain.model.Component
 @ExperimentalAnimationApi
 class TextFieldComponentBasis(
     private val component: Component,
-    private val onComponentEvent: (DynamicComponentEvent) -> Unit,
+    private val onComponentEvent: (DynamicComponentEvent) -> Unit = {},
 ) : BaseDynamicComponent {
     private var text by mutableStateOf("")
-
-    override fun getValue(): String = text
 
     override fun isValid(): Boolean {
         return text.length <= component.componentMaxLength && text.isNotEmpty()
@@ -37,6 +35,15 @@ class TextFieldComponentBasis(
                     )
                 )
             }
+        )
+    }
+
+    @Composable
+    override fun Review() {
+        TextFieldReview(
+            title = component.componentTitle,
+            description = component.componentDescription,
+            value = component.componentValue
         )
     }
 }

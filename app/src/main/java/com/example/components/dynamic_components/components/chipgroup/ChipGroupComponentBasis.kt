@@ -8,18 +8,14 @@ import com.example.components.dynamic_components.components.DynamicComponentEven
 import com.example.components.dynamic_components.components.base.BaseDynamicListComponent
 import com.example.components.dynamic_components.components.utils.enums.keyboard
 import com.example.components.feature.dynamic_form.domain.model.Component
-import com.example.components.feature.dynamic_form.domain.model.Option
 
 @ExperimentalMaterialApi
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
 class ChipGroupComponentBasis(
     private val component: Component,
-    private val onComponentEvent: (DynamicComponentEvent) -> Unit,
+    private val onComponentEvent: (DynamicComponentEvent) -> Unit = {},
 ) : BaseDynamicListComponent {
-    override fun getValue(): List<Option> {
-        return component.componentOptions.filter { it.optionChecked }
-    }
 
     override fun isValid(): Boolean {
         return component.componentOptions.any {
@@ -32,11 +28,17 @@ class ChipGroupComponentBasis(
         ChipGroupContent(
             title = component.componentTitle,
             description = component.componentDescription,
+            options = component.componentOptions,
             keyboard = component.componentInputType.keyboard(),
             onChipAdd = {
-                component.componentOptions = component.componentOptions + it
                 onComponentEvent(
                     DynamicComponentEvent.OnChipAdd(
+                        component = component,
+                        option = it
+                    )
+                )
+                onComponentEvent(
+                    DynamicComponentEvent.UpdateOptionsValidations(
                         component = component,
                         option = it,
                         isValid = isValid()
@@ -44,15 +46,29 @@ class ChipGroupComponentBasis(
                 )
             },
             onChipRemove = {
-                component.componentOptions = component.componentOptions - it
                 onComponentEvent(
                     DynamicComponentEvent.OnChipRemove(
+                        component = component,
+                        option = it
+                    )
+                )
+                onComponentEvent(
+                    DynamicComponentEvent.UpdateOptionsValidations(
                         component = component,
                         option = it,
                         isValid = isValid()
                     )
                 )
             }
+        )
+    }
+
+    @Composable
+    override fun Review() {
+        ChipGroupReview(
+            title = component.componentTitle,
+            description = component.componentDescription,
+            values = component.componentOptions.map { it.optionDescription }
         )
     }
 }

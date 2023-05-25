@@ -1,6 +1,5 @@
 package com.example.components.dynamic_components.components.dropdown
 
-import com.example.components.feature.dynamic_form.domain.model.Component
 import com.example.components.feature.dynamic_form.domain.model.Option
 
 fun emptyCategory() =
@@ -23,4 +22,8 @@ fun List<Option>.toggleOption(option: Option) {
     val optionSelected = this.find { it.optionCode == option.optionCode }
     val currentValue = optionSelected!!.optionChecked
     optionSelected.optionChecked = !currentValue
+}
+
+fun List<Option>.getSingleCheckedOptionDescription(): String {
+    return this.firstOrNull { it.optionChecked }?.optionDescription ?: ""
 }

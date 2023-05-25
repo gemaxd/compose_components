@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import com.example.components.feature.dynamic_form.domain.model.Option
 
 interface BaseDynamicListComponent {
-    fun getValue(): List<Option>
     fun isValid(): Boolean
     @Composable
     fun Content()
+
+    @Composable
+    fun Review()
 }

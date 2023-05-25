@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -26,11 +24,16 @@ import com.example.components.feature.dynamic_form.domain.model.Option
 fun ChipGroupContent(
     title: String,
     description: String?,
+    options: List<Option> = emptyList(),
     keyboard: KeyboardType,
     onChipAdd: (Option) -> Unit,
     onChipRemove: (Option) -> Unit
 ){
-    val selectedChips = remember { mutableStateListOf<Option>() }
+    val currentOptions = remember { mutableStateListOf<Option>() }
+
+    LaunchedEffect(Unit){
+        currentOptions.addAll(options)
+    }
 
     Column {
         TextFieldContent(
@@ -39,7 +42,7 @@ fun ChipGroupContent(
             keyboard = keyboard,
             onDone = {
                 val createdOption = Option(optionDescription = it, optionChecked = true)
-                selectedChips.add(createdOption)
+                currentOptions.add(createdOption)
                 onChipAdd(createdOption)
             }
         )
@@ -48,17 +51,15 @@ fun ChipGroupContent(
             modifier = Modifier.padding(vertical = 16.dp),
             maxItemsInEachRow = 3,
         ) {
-            selectedChips.forEach { chip ->
+            currentOptions.forEach { chip ->
                 Box(modifier = Modifier.padding(horizontal = 4.dp)){
-                    Chip(
-                        onClick = {
+                    ChipContent(
+                        onRemoveChip = {
                             onChipRemove(chip)
-                            selectedChips.remove(chip)
+                            currentOptions.remove(chip)
                         },
-                        modifier = Modifier.requiredHeight(32.dp)
-                    ) {
-                        Text(text = chip.optionDescription)
-                    }
+                        description = chip.optionDescription
+                    )
                 }
             }
         }

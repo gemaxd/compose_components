@@ -11,16 +11,12 @@ import com.example.components.dynamic_components.components.base.BaseDynamicList
 import com.example.components.dynamic_components.components.dropdown.emptyOption
 import com.example.components.dynamic_components.components.dropdown.toggleOption
 import com.example.components.feature.dynamic_form.domain.model.Component
-import com.example.components.feature.dynamic_form.domain.model.Option
 
 @ExperimentalAnimationApi
 class CheckBoxesListComponentBasis(
     private val component: Component,
-    private val onComponentEvent: (DynamicComponentEvent) -> Unit,
+    private val onComponentEvent: (DynamicComponentEvent) -> Unit = {},
 ) : BaseDynamicListComponent {
-    override fun getValue(): List<Option> {
-        return component.componentOptions.filter { it.optionChecked }
-    }
 
     override fun isValid(): Boolean {
         return component.componentOptions.any {
@@ -45,6 +41,16 @@ class CheckBoxesListComponentBasis(
                     )
                 )
             }
+        )
+    }
+
+    @Composable
+    override fun Review() {
+        CheckBoxesListReview(
+            title = component.componentTitle,
+            description = component.componentDescription,
+            items = component.componentOptions.filter { it.optionChecked }
+                .map { it.optionDescription }
         )
     }
 }
