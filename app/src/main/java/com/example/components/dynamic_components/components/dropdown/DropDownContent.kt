@@ -26,11 +26,11 @@ fun DropdownContent(
     onItemSelected: (Option) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var localSelectedItem by remember { mutableStateOf(selectedItem) }
-
-    LaunchedEffect(Unit){
-        localSelectedItem = items.firstOrNull { it.optionChecked } ?: emptyOption()
-    }
+    var localSelectedItem = selectedItem
+//
+//    LaunchedEffect(Unit){
+//        localSelectedItem = items.firstOrNull { it.optionChecked } ?: emptyOption()
+//    }
 
     Column {
         DropDownSelector(

@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,8 +37,6 @@ import androidx.navigation.NavHostController
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.dropdown.DropdownChildContent
 import com.example.components.dynamic_components.components.dropdown.DropdownContent
-import com.example.components.dynamic_components.components.dropdown.emptyCategory
-import com.example.components.dynamic_components.components.dropdown.emptySubCategory
 import com.example.components.feature.dynamic_form.presentation.dynamic_form.wrapper.CreateFormComponents
 import com.example.components.navigation.Screen
 
@@ -117,7 +114,8 @@ fun DynamicFormContent(
     onComponentEvent: (DynamicComponentEvent) -> Unit
 ){
     val focusManager = LocalFocusManager.current
-    var selectedSubCategory by remember { mutableStateOf(state.subcategories.firstOrNull() ?: emptySubCategory()) }
+    val selectedCategory = state.selectedCategory
+    val selectedSubCategory= state.selectedSubCategory
 
     Box(
         modifier = Modifier.verticalScroll(rememberScrollState())
@@ -130,12 +128,10 @@ fun DynamicFormContent(
         ) {
             DropdownContent(
                 items = state.categories,
-                selectedItem = emptyCategory(),
+                selectedItem = selectedCategory,
                 onItemSelected = {
-                    selectedSubCategory = emptySubCategory()
-                    onEvent(
-                        DynamicFormEvent.LoadSubCategoriesList(it.optionCode)
-                    )
+                    onEvent(DynamicFormEvent.OnCategorySelection(it))
+                    onEvent(DynamicFormEvent.LoadSubCategoriesList(it.optionCode))
                     focusManager.clearFocus(true)
                 },
                 title = "Categoria",
@@ -148,10 +144,8 @@ fun DynamicFormContent(
                 items = state.subcategories,
                 selectedItem = selectedSubCategory,
                 onItemSelected = {
-                    selectedSubCategory = it
-                    onEvent(
-                        DynamicFormEvent.LoadComponentList(it.optionCode)
-                    )
+                    onEvent(DynamicFormEvent.OnSubCategorySelection(it))
+                    onEvent(DynamicFormEvent.LoadComponentList(it.optionCode))
                     focusManager.clearFocus(true)
                 },
                 title = "Sub-Categoria",

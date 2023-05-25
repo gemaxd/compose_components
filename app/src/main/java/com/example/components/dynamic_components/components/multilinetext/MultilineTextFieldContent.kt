@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.components.dynamic_components.components.base.DefaultComponentHeader
 import com.example.components.dynamic_components.components.base.DynamicComponentContainer
-import com.example.components.dynamic_components.components.structurebasis.DefaultCharacterCounter
+import com.example.components.dynamic_components.components.base.DefaultCharacterCounter
 import com.example.components.dynamic_components.components.utils.DEFAULT_MULTILINE_HEIGHT
 import com.example.components.dynamic_components.components.utils.enums.keyboard
 import com.example.components.feature.dynamic_form.domain.model.Component

@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.components.dynamic_components.components.DynamicComponentEvent
+import com.example.components.dynamic_components.components.dropdown.emptySubCategory
 import com.example.components.feature.dynamic_form.domain.model.Component
 import com.example.components.feature.dynamic_form.domain.repository.DynamicFormRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -106,16 +107,31 @@ class DynamicFormViewModel @Inject constructor(
                     this.isLoading = false
                 }
             }
+
+            is DynamicFormEvent.OnCategorySelection -> {
+                dynamicFormStateUpdate {
+                    selectedCategory = event.category
+                    selectedSubCategory = emptySubCategory()
+                }
+            }
+
+            is DynamicFormEvent.OnSubCategorySelection -> {
+                dynamicFormStateUpdate {
+                    selectedSubCategory = event.subCategory
+                }
+            }
         }
     }
 
     fun onComponentEvent(event: DynamicComponentEvent) {
         when (event) {
             is DynamicComponentEvent.OnDropDownOptionSelected -> {
-                updateOptionValidations(
-                    component = event.component,
-                    isValid = event.isValid
-                )
+                val options = event.component.componentOptions
+                val selectedOption = event.option
+
+                options.map { it.optionChecked = false }
+                val optionSelected = options.find { it.optionCode == selectedOption.optionCode }
+                optionSelected?.optionChecked = true
             }
 
             is DynamicComponentEvent.AddAttachment -> {
@@ -164,6 +180,24 @@ class DynamicFormViewModel @Inject constructor(
                     component = event.component,
                     isValid = event.isValid
                 )
+            }
+
+            is DynamicComponentEvent.OnRadioButtonSelection -> {
+                val options = event.component.componentOptions
+                val selectedOption = event.option
+
+                options.map { it.optionChecked = false }
+                val optionSelected = options.find { it.optionCode == selectedOption.optionCode }
+                optionSelected?.optionChecked = true
+            }
+
+            is DynamicComponentEvent.OnCheckBoxToggle -> {
+                val options = event.component.componentOptions
+                val selectedOption = event.option
+
+                options.find { it.optionCode == selectedOption.optionCode }?.apply {
+                    this.optionChecked = !this.optionChecked
+                }
             }
         }
     }

@@ -4,8 +4,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicListComponent
-import com.example.components.dynamic_components.components.dropdown.getSingleCheckedOptionDescription
-import com.example.components.dynamic_components.components.dropdown.singleCheckOption
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
@@ -27,9 +25,13 @@ class RadioButtonListComponentBasis(
             description = component.componentDescription,
             items = component.componentOptions,
             onItemSelected = { option ->
-                component.componentOptions.singleCheckOption(option)
                 onComponentEvent(
-                    DynamicComponentEvent.OnDropDownOptionSelected(
+                    DynamicComponentEvent.OnRadioButtonSelection(
+                        component, option
+                    )
+                )
+                onComponentEvent(
+                    DynamicComponentEvent.UpdateOptionsValidations(
                         component, option, isValid()
                     )
                 )
@@ -42,7 +44,7 @@ class RadioButtonListComponentBasis(
         RadioButtonListReview(
             title = component.componentTitle,
             description = component.componentDescription,
-            value = component.componentOptions.getSingleCheckedOptionDescription()
+            value = component.getSingleCheckedOptionDescription()
         )
     }
 }

@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicListComponent
 import com.example.components.dynamic_components.components.dropdown.emptyOption
-import com.example.components.dynamic_components.components.dropdown.toggleOption
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
@@ -34,9 +33,13 @@ class CheckBoxesListComponentBasis(
             items = component.componentOptions,
             onItemSelected = { option ->
                 selectedOption = option
-                component.componentOptions.toggleOption(option)
                 onComponentEvent(
-                    DynamicComponentEvent.OnDropDownOptionSelected(
+                    DynamicComponentEvent.OnCheckBoxToggle(
+                        component, option
+                    )
+                )
+                onComponentEvent(
+                    DynamicComponentEvent.UpdateOptionsValidations(
                         component, option, isValid()
                     )
                 )

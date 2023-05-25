@@ -1,5 +1,6 @@
 package com.example.components.feature.dynamic_form.domain.model
 
+import com.example.components.dynamic_components.components.dropdown.getSingleCheckedOptionDescription
 import com.example.components.dynamic_components.components.utils.enums.EnumComponentInputType
 import com.example.components.dynamic_components.components.utils.enums.EnumComponentType
 
@@ -14,4 +15,8 @@ data class Component(
     val componentInputType: EnumComponentInputType = EnumComponentInputType.TEXT,
     var componentOptions: List<Option> = emptyList(),
     var componentAttachments: List<Attachment> = emptyList(),
-)
+){
+    fun getSingleCheckedOptionDescription(): String {
+        return componentOptions.firstOrNull { it.optionChecked }?.optionDescription ?: ""
+    }
+}

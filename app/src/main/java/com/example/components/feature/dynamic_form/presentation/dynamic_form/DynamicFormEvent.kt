@@ -11,4 +11,6 @@ sealed class DynamicFormEvent {
     data class LoadSubCategoriesList(val categoryId: Int): DynamicFormEvent()
     object StartLoading: DynamicFormEvent()
     object StopLoading: DynamicFormEvent()
+    data class OnCategorySelection(val category: Option): DynamicFormEvent()
+    data class OnSubCategorySelection(val subCategory: Option): DynamicFormEvent()
 }
