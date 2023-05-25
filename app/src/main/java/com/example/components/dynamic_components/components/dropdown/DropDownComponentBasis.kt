@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicListComponent
+import com.example.components.dynamic_components.components.singlelinetext.SimpleComponentReview
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
@@ -56,12 +57,11 @@ class DropDownComponentBasis(
 
     @Composable
     override fun Review() {
-        DropDownReview(
+        SimpleComponentReview(
             title = title,
             description = description,
-            value = component.getSingleCheckedOptionDescription()
+            values = listOf(component.getSingleCheckedOptionDescription())
         )
     }
-
 }
 

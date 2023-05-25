@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicListComponent
 import com.example.components.dynamic_components.components.dropdown.emptyOption
+import com.example.components.dynamic_components.components.singlelinetext.SimpleComponentReview
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
@@ -49,10 +50,10 @@ class CheckBoxesListComponentBasis(
 
     @Composable
     override fun Review() {
-        CheckBoxesListReview(
+        SimpleComponentReview(
             title = component.componentTitle,
             description = component.componentDescription,
-            items = component.componentOptions.filter { it.optionChecked }
+            values = component.componentOptions.filter { it.optionChecked }
                 .map { it.optionDescription }
         )
     }

@@ -4,7 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicComponent
-import com.example.components.dynamic_components.components.singlelinetext.TextFieldReview
+import com.example.components.dynamic_components.components.singlelinetext.SimpleComponentReview
 import com.example.components.feature.dynamic_form.domain.model.Component
 
 @ExperimentalAnimationApi
@@ -36,10 +36,10 @@ class MultilineTextFieldBasis(
 
     @Composable
     override fun Review() {
-        TextFieldReview(
+        SimpleComponentReview(
             title = component.componentTitle,
             description = component.componentDescription,
-            value = component.componentValue
+            values = listOf(component.componentValue)
         )
     }
 }

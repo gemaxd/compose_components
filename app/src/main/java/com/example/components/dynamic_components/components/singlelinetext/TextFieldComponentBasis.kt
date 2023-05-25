@@ -40,10 +40,10 @@ class TextFieldComponentBasis(
 
     @Composable
     override fun Review() {
-        TextFieldReview(
+        SimpleComponentReview(
             title = component.componentTitle,
             description = component.componentDescription,
-            value = component.componentValue
+            values = listOf(component.componentValue)
         )
     }
 }

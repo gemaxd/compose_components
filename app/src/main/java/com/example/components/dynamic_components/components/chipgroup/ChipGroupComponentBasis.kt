@@ -6,6 +6,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import com.example.components.dynamic_components.components.DynamicComponentEvent
 import com.example.components.dynamic_components.components.base.BaseDynamicListComponent
+import com.example.components.dynamic_components.components.singlelinetext.SimpleComponentReview
 import com.example.components.dynamic_components.components.utils.enums.keyboard
 import com.example.components.feature.dynamic_form.domain.model.Component
 
@@ -65,7 +66,7 @@ class ChipGroupComponentBasis(
 
     @Composable
     override fun Review() {
-        ChipGroupReview(
+        SimpleComponentReview(
             title = component.componentTitle,
             description = component.componentDescription,
             values = component.componentOptions.map { it.optionDescription }
